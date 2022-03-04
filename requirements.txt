@@ -2,3 +2,4 @@
 git+https://github.com/newaetech/chipwhisperer#egg=chipwhisperer
 git+https://github.com/Ledger-Donjon/lascar#egg=lascar
 jupyter
+bokeh

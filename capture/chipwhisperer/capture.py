@@ -7,9 +7,6 @@ import securec
 import securec.util
 
 
-random_length = 4 + 48
-
-
 def _capture(data, cmd=0x01, samples=500):
     securec.config.scope.adc.samples = samples
     securec.config.scope.arm()
@@ -18,57 +15,80 @@ def _capture(data, cmd=0x01, samples=500):
 
 
 def capture(
-    trace_samples=1500,
+    trace_samples=500,
     trace_nums=100,
-    randfunc=lambda: bytes([random.randint(0, 255) for _ in range(4 + 48)])
+    inputfunc=lambda: [random.randint(0, 255) for _ in range(16)],
+    keyfunc=lambda: [random.randint(0, 255) for _ in range(16)],
+    randfunc=lambda: [random.randint(0, 255) for _ in range(4)],
 ):
-    data = np.zeros(trace_nums, dtype=[
-        ('trace', 'f8', trace_samples),
-        ('input', 'u1', 16),
-        ('key', 'u1', 16),
-        ('random', 'u1', 4 + 48),
-    ])
+    data = np.zeros(
+        trace_nums,
+        dtype=[
+            ("trace", "f8", trace_samples),
+            ("input", "u1", 16),
+            ("key", "u1", 16),
+            ("random", "u1", 4 + 48),
+        ],
+    )
     for i in tqdm.tqdm(range(trace_nums)):
-        data['input'][i, :] = [random.randint(0, 255) for _ in range(16)]
-        data['key'][i, :] = [random.randint(0, 255) for _ in range(16)]
-        attempt = bytes(data['input'][i, :])
-        key = bytes(data['key'][i, :])
-        data['trace'][i, :] = _capture(key + attempt + randfunc(), samples=trace_samples)
+        data["input"][i, :] = inputfunc()
+        data["key"][i, :] = keyfunc()
+        data["random"][i, :] = randfunc() + [random.randint(0, 255) for _ in range(48)]
+        attempt = bytes(data["input"][i, :])
+        key = bytes(data["key"][i, :])
+        rand = bytes(data["random"][i, :])
+        data["trace"][i, :] = _capture(key + attempt + rand, samples=trace_samples)
     return data
 
 
+fixeddata = [0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A]
+
+
 def main():
-    scope, target = securec.util.init(platform='CWLITEXMEGA')
-    securec.util.compile_and_flash('./sbox_simpleserial.c')
+    # Setup, compile and flash
+    scope, target = securec.util.init(platform="CWLITEARM")
+    securec.util.compile_and_flash("./sbox_simpleserial.c")
     scope.default_setup()
     securec.util.reset_target()
 
-    # Plain lookup
-    # np.save('../../data/cw_plain.npy', capture(
-    #     trace_nums=5000,
-    #     randfunc=lambda: 4 * b'\x00' + bytes([random.randint(0, 255) for _ in range(48)]),
+    # Create output
+    if not os.path.exists("../../data"):
+        os.mkdir("../../data")
 
-    # ))
-    # np.save('../../data/cw_loop_order_1.npy', capture(
-    #     trace_nums=5000,
-    #     randfunc=lambda: 2 * b'\x00' + bytes([random.randint(0, 1)]) + bytes([random.randint(0, 255) for _ in range(1 + 48)]),
-    # ))
-    # np.save('../../data/cw_loop_order_2.npy', capture(
-    #     trace_nums=5000,
-    #     randfunc=lambda: 2 * b'\x00' + bytes([random.randint(0, 3)]) + bytes([random.randint(0, 255) for _ in range(1 + 48)]),
-    # ))
+    for name, trace_nums, inputfunc, keyfunc, randfunc in (
+        # Plain lookup
+        ("cw_plain", 10_000, None, None, lambda: 4 * [0]),
+        # Plain with fixed input
+        ("cw_plain_fixedinput", 10_000, lambda: fixeddata, None, lambda: 4 * [0]),
+        # Plain with fixed key
+        ("cw_plain_fixedkey", 10_000, None, lambda: fixeddata, lambda: 4 * [0]),
+        # Random loop order with 1 bit random
+        ("cw_loop1", 10_000, None, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        # Random loop order with 1 bit random, fixed input
+        ("cw_loop1_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        # Random loop order with 1 bit random, fixed key
+        ("cw_loop1_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 1), 0]),
+        # Random loop order with 2 bit random
+        ("cw_loop2", 10_000, None, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        # Random loop order with 2 bit random, fixed input
+        ("cw_loop2_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        # Random loop order with 2 bit random, fixed key
+        ("cw_loop2_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
+    ):
+        print("Recording ", name)
+        np.save(
+            f"../../data/{name}.npy",
+            capture(
+                trace_nums=trace_nums,
+                inputfunc=inputfunc or (lambda: [random.randint(0, 255) for _ in range(16)]),
+                keyfunc=keyfunc or (lambda: [random.randint(0, 255) for _ in range(16)]),
+                randfunc=randfunc,
+            ),
+        )
 
-    np.save('../../data/cw_loop_order.npy', capture(
-        trace_nums=500,
-        randfunc=lambda: 2 * b'\x00' + bytes([random.randint(0, 255)]) + bytes([random.randint(0, 255) for _ in range(1 + 48)]),
-    ))
-    # np.save('../../data/cw_sbox_in.npy', capture(
-    #     trace_nums=10000,
-    #     randfunc=lambda: bytes([random.randint(0, 255)]) + 3 * b'\x00' + bytes([random.randint(0, 255) for _ in range(48)]),
-    # ))
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     import os
+
     os.chdir(os.path.abspath(os.path.dirname(__file__)))
     main()

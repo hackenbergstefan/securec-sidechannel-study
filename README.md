@@ -14,19 +14,19 @@ We used the following sources for study:
 
 The repository is structured into four main folders:
 
-- `./src`
+- [./src](./src)
   The C-code under investigation.
-- `./capture`
+- [./capture](./capture)
   Code and tools for capturing side-channel traces used in this study.
-- `./analyse`
+- [./analyse](./analyse)
   Code and tools for analysis of captured side-channel traces.
-- `./data`
+- [./data](./data)
   The actual side-channel traces.
 
 ## Capture
 
-./capture/README.md
+[./capture/README.md](./capture/README.md)
 
 ## Analyze
 
-./analyze/README.md
+[./analyze/README.md](./analyze/README.md)

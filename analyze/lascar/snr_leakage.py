@@ -11,6 +11,7 @@ datasets = {
         "cw_plain_fixedinput",
         "cw_loop1_fixedinput",
         "cw_loop2_fixedinput",
+        "cw_loop5_fixedinput",
     )
 }
 

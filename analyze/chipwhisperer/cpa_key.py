@@ -11,6 +11,7 @@ datasets = {
         "cw_plain_fixedkey",
         "cw_loop1_fixedkey",
         "cw_loop2_fixedkey",
+        "cw_loop5_fixedkey",
     )
 }
 
@@ -23,12 +24,12 @@ poi_selectors = {
 
 poi_selector_name = "subbytes"
 poi_selector = poi_selectors[poi_selector_name]
+data = datasets["cw_loop5_fixedkey"]
 
 
 def main():
-    for i, (dataname, data) in enumerate(datasets.items()):
-        maxpearson = np.max(np.abs(pearson_pointwise(data["trace"], poi_selector(data))))
-        print(f"Max correlation on {poi_selector_name} for {dataname:20s}: {maxpearson:02f}")
+    maxpearson = np.max(np.abs(pearson_pointwise(data["trace"], poi_selector(data))))
+    print(f"Max correlation on {poi_selector_name}: {maxpearson:02f}")
 
 
 if __name__ == "__main__":

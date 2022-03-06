@@ -11,6 +11,7 @@ datasets = {
         "cw_plain_fixedkey",
         "cw_loop1_fixedkey",
         "cw_loop2_fixedkey",
+        "cw_loop5_fixedkey",
     )
 }
 
@@ -24,24 +25,25 @@ poi_selectors = {
 poi_selector_name = "subbytes"
 poi_selector = poi_selectors[poi_selector_name]
 
+data = datasets["cw_loop5_fixedkey"]
+
 
 class MaxArgmaxOutputMethod(lascar.OutputMethod):
     def _update(self, engine, result):
         maxs = np.max(np.abs(result), axis=1)
-        self.logger.info(f"Maximum of {engine.name}:  {np.max(maxs):.2f} @ guess {np.argmax(maxs):4d}")
+        self.logger.info(f"Maximum of {engine.name}: {np.max(maxs):.2f} @ guess {np.argmax(maxs):4d}")
 
 
 def main():
-    for dataname, data in datasets.items():
-        trace = lascar.TraceBatchContainer(data["trace"], data["input"])
-        engine = lascar.CpaEngine(
-            name=f"{poi_selector_name} for {dataname}",
-            selection_function=poi_selectors[poi_selector_name],
-            guess_range=range(256),
-        )
+    trace = lascar.TraceBatchContainer(data["trace"], data["input"])
+    engine = lascar.CpaEngine(
+        name=f"{poi_selector_name}",
+        selection_function=poi_selectors[poi_selector_name],
+        guess_range=range(256),
+    )
 
-        session = lascar.Session(trace, engine=engine, output_method=MaxArgmaxOutputMethod(engine))
-        session.run(batch_size=100_000)
+    session = lascar.Session(trace, engine=engine, output_method=MaxArgmaxOutputMethod(engine))
+    session.run(batch_size=100_000, thread_on_update=False)
 
 
 if __name__ == "__main__":

@@ -74,6 +74,10 @@ def main():
         ("cw_loop2_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 3), 0]),
         # Random loop order with 2 bit random, fixed key
         ("cw_loop2_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
+        # Random loop order with 5 bit random, fixed input
+        ("cw_loop5_fixedinput", 100_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
+        # Random loop order with 5 bit random, fixed key
+        ("cw_loop5_fixedkey", 100_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
     ):
         print("Recording ", name)
         np.save(

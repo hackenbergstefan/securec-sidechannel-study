@@ -1,9 +1,0 @@
-data/cw_plain.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop1_fixedkey.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop2.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop2_fixedinput.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop2_fixedkey.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_plain_fixedinput.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_plain_fixedkey.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop1.npy filter=lfs diff=lfs merge=lfs -text
-data/cw_loop1_fixedinput.npy filter=lfs diff=lfs merge=lfs -text

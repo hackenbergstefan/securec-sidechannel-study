@@ -1,23 +1,9 @@
 #!/usr/bin/env python
-import os
 import numpy as np
 import lascar
+import datasets
 
 lascar.logger.setLevel(lascar.logging.CRITICAL)
-
-basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-
-datasets = {
-    name: np.load(f"{basedir}/data/{name}.npy")
-    for name in (
-        "cw_plain_fixedkey",
-        "cw_loop1_fixedkey",
-        "cw_loop2_fixedkey",
-        "cw_loop5_fixedkey",
-    )
-}
-
-poi_selector_name = "subbytes"
 
 correct_key = 171
 
@@ -55,13 +41,13 @@ def do(data):
 
     def ttest_selection(guess):
         def selector(value):
-            return lascar.tools.aes.sbox[value[0] ^ guess] & 0x01
+            return (value[0] ^ guess) & 0x01
 
         return selector
 
     def snr_selection(guess):
         def selector(value):
-            return lascar.hamming(lascar.tools.aes.sbox[value[0] ^ guess])
+            return lascar.hamming(value[0] ^ guess)
 
         return selector
 
@@ -84,7 +70,7 @@ def do(data):
 
     engine_cpa = lascar.CpaEngine(
         name=f"cpa",
-        selection_function=lambda value, guess: lascar.tools.aes.sbox[value[0] ^ guess],
+        selection_function=lambda value, guess: lascar.hamming(value[0] ^ guess),
         guess_range=range(256),
     )
 
@@ -95,7 +81,25 @@ def do(data):
         trace,
         engines=engines,
         output_method=output_method,
-        output_steps=[50, 100, 200, 500, 1000, 2000, 5000, 10_000, 50_000, 100_000],
+        output_steps=[
+            50,
+            100,
+            200,
+            500,
+            1000,
+            2000,
+            5000,
+            10_000,
+            20_000,
+            30_000,
+            40_000,
+            50_000,
+            60_000,
+            70_000,
+            80_000,
+            90_000,
+            100_000,
+        ],
         progressbar=False,
     )
     session.run(batch_size=100_000)
@@ -105,7 +109,7 @@ def do(data):
 
 
 def main():
-    do(datasets["cw_loop5_fixedkey"])
+    do(datasets.dataset("cw_sbox_fixedkey"))
 
 
 if __name__ == "__main__":

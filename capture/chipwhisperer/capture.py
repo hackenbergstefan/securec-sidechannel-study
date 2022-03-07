@@ -56,28 +56,39 @@ def main():
         os.mkdir("../../data")
 
     for name, trace_nums, inputfunc, keyfunc, randfunc in (
-        # Plain lookup
-        ("cw_plain", 10_000, None, None, lambda: 4 * [0]),
-        # Plain with fixed input
-        ("cw_plain_fixedinput", 10_000, lambda: fixeddata, None, lambda: 4 * [0]),
-        # Plain with fixed key
-        ("cw_plain_fixedkey", 10_000, None, lambda: fixeddata, lambda: 4 * [0]),
-        # Random loop order with 1 bit random
-        ("cw_loop1", 10_000, None, None, lambda: [0, 0, random.randint(0, 1), 0]),
-        # Random loop order with 1 bit random, fixed input
-        ("cw_loop1_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 1), 0]),
-        # Random loop order with 1 bit random, fixed key
-        ("cw_loop1_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 1), 0]),
-        # Random loop order with 2 bit random
-        ("cw_loop2", 10_000, None, None, lambda: [0, 0, random.randint(0, 3), 0]),
-        # Random loop order with 2 bit random, fixed input
-        ("cw_loop2_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 3), 0]),
-        # Random loop order with 2 bit random, fixed key
-        ("cw_loop2_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
-        # Random loop order with 5 bit random, fixed input
-        ("cw_loop5_fixedinput", 100_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
-        # Random loop order with 5 bit random, fixed key
-        ("cw_loop5_fixedkey", 100_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
+        # fmt: off
+
+        # # Plain lookup
+        # ("cw_plain", 10_000, None, None, lambda: 4 * [0]),
+        # # Plain with fixed input
+        # ("cw_plain_fixedinput", 10_000, lambda: fixeddata, None, lambda: 4 * [0]),
+        # # Plain with fixed key
+        # ("cw_plain_fixedkey", 10_000, None, lambda: fixeddata, lambda: 4 * [0]),
+
+        # # Random loop order with 1 bit random
+        # ("cw_loop1", 10_000, None, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        # # Random loop order with 1 bit random, fixed input
+        # ("cw_loop1_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        # # Random loop order with 1 bit random, fixed key
+        # ("cw_loop1_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 1), 0]),
+
+        # # Random loop order with 2 bit random
+        # ("cw_loop2", 10_000, None, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        # # Random loop order with 2 bit random, fixed input
+        # ("cw_loop2_fixedinput", 10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        # # Random loop order with 2 bit random, fixed key
+        # ("cw_loop2_fixedkey", 10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
+
+        # # Random loop order with 5 bit random, fixed input
+        # ("cw_loop5_fixedinput", 100_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
+        # # Random loop order with 5 bit random, fixed key
+        # ("cw_loop5_fixedkey", 100_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
+
+        # # Masked SBOX, fixed key
+        # ( "cw_sbox_fixedkey", 100_000, None, lambda: fixeddata, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
+        # Masked SBOX, fixed input
+        ( "cw_sbox_fixedinput", 100_000, lambda: fixeddata, None, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
+        # fmt: on
     ):
         print("Recording ", name)
         np.save(

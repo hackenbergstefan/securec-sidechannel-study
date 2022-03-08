@@ -58,7 +58,7 @@ fixeddata = [0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0
 
 
 def main():
-    capture("elmo_sboxleaky_fixedinput", inputfunc=lambda: fixeddata, trace_samples=546, trace_nums=10_000)
+    capture("elmo_loop5_fixedkey", keyfunc=lambda: fixeddata, trace_samples=546, trace_nums=100_000)
 
 
 if __name__ == "__main__":

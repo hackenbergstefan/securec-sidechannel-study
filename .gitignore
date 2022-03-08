@@ -3,6 +3,8 @@
 .dep
 objdir-*
 
+*.trc
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -89,7 +89,7 @@ def main():
         # Random loop order with 5 bit random, fixed input
         "cw_loop5_fixedinput": (100_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
         # Random loop order with 5 bit random, fixed key
-        "cw_loop5_fixedkey": (100_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
+        "cw_loop5_fixedkey": (200_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
 
         # Masked SBOX, fixed key
         "cw_sbox_fixedkey": (100_000, None, lambda: fixeddata, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),

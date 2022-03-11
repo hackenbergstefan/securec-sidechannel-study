@@ -37,7 +37,7 @@ def capture(
     subprocess.check_call(["make", "clean", "all"])
 
     subprocess.check_call(
-        ["/home/stefan/elmo/elmo", "sbox_elmo.bin"],
+        [f"/home/stefan/elmo/{name.split('_')[0]}", "sbox_elmo.bin"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -58,7 +58,8 @@ fixeddata = [0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0
 
 
 def main():
-    capture("elmo_loop5_fixedkey", keyfunc=lambda: fixeddata, trace_samples=546, trace_nums=100_000)
+    for model in ("elmopower", "elmodiff", "elmohwpower", "elmohwdiff"):
+        capture(f"{model}_sboxleaky_fixedinput", inputfunc=lambda: fixeddata, trace_samples=546, trace_nums=10_000)
 
 
 if __name__ == "__main__":

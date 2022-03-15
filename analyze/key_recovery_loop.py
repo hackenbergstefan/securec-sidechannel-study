@@ -17,7 +17,6 @@ def cpa(dataset, selection_function, correct_key):
 
         def _update(self, engine, results):
             maxs = np.argsort(np.max(np.abs(results), axis=1))[::-1]
-            # print(maxs[0], np.max(np.abs(results)[0]))
             self.ranks.append((engine.finalize_step[-1], np.where(maxs == correct_key)[0][0]))
 
     trace = lascar.TraceBatchContainer(dataset["trace"], dataset["input"])

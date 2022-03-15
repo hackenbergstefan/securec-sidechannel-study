@@ -41,23 +41,21 @@
  */
 /*
  *################################################################################################
- *# Default                        # Alternative                   # Define #
+ *# Default                        # Alternative                   # Define                      #
  *################################################################################################
- *# ASCII traces                   # Binary traces                 #
- *BINARYTRACES                # # ELMO power model               # Hamming
- *weight model          # POWERMODEL_HW               # # Modelled differential
- *voltage  # Convert to power              # POWERTRACES                 # # All
- *traces are same length     # Traces of different length    # DIFFTRACELENGTH #
- *# Not mean centered              # Mean centred (need to         # MEANCENTRE
- *# #                                # evaluate higher order masks)  # # #
- *Instruction accurate traces    # Cycle accurate traces         # CYCLEACCURATE
- *1             # # Print first asm trace          # Print all asm traces #
- *PRINTALLASMTRACES 1         # # Print first non-profiled trace # Print all
- *non-profiled traces # PRINTALLNONPROFILEDTRACES 1 #
+ *# ASCII traces                   # Binary traces                 # BINARYTRACES                #
+ *# ELMO power model               # Hamming weight model          # POWERMODEL_HW               #
+ *# Modelled differential voltage  # Convert to power              # POWERTRACES                 #
+ *# All traces are same length     # Traces of different length    # DIFFTRACELENGTH             #
+ *# Not mean centered              # Mean centred (need to         # MEANCENTRE                  #
+ *#                                # evaluate higher order masks)  #                             #
+ *# Instruction accurate traces    # Cycle accurate traces         # CYCLEACCURATE 1             #
+ *# Print first asm trace          # Print all asm traces          # PRINTALLASMTRACES 1         #
+ *# Print first non-profiled trace # Print all non-profiled traces # PRINTALLNONPROFILEDTRACES 1 #
  *################################################################################################
  *
- * To include fixed vs random, mask flow and energy modelling evaluations define
- *FIXEDVSRANDOM, MASKFLOW and ENERGYMODEL respectively.
+ * To include fixed vs random, mask flow and energy modelling evaluations define FIXEDVSRANDOM,
+ * MASKFLOW and ENERGYMODEL respectively.
  */
 
 /*******************************************************************************************/
@@ -113,7 +111,7 @@ unsigned long systick_ints;
                          // bus
 //#define FIXEDVSRANDOM
 //#define MASKFLOW
-//#define ENERGYMODEL
+#define ENERGYMODEL
 
 //#define DIFFTRACELENGTH
 #define BINARYTRACES
@@ -210,7 +208,8 @@ double constant[5], PrvInstr[4][5], SubInstr[4][5], Operand1[32][5],
 double EffectiveSize, Statistical_alpha, Statistical_beta;
 int N;
 
-struct bit32maskflow {
+struct bit32maskflow
+{
 
   uint8_t maskflow[128][32];
   unsigned int count;
@@ -220,7 +219,8 @@ struct bit32maskflow {
 
 typedef struct bit32maskflow bit32_maskflow;
 
-struct bit16maskflow {
+struct bit16maskflow
+{
 
   uint8_t maskflow[128][16];
   unsigned int count;
@@ -230,7 +230,8 @@ struct bit16maskflow {
 
 typedef struct bit16maskflow bit16_maskflow;
 
-struct data_flow {
+struct data_flow
+{
 
   unsigned int op1;
   unsigned int op1_binary[32];

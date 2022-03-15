@@ -45,8 +45,9 @@ fixeddata = [0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0
 
 
 def main():
+    platform = "arm"
     # Setup, compile and flash
-    scope, target = securec.util.init(platform="CWLITEARM")
+    scope, target = securec.util.init(platform="CWLITE" + platform.upper())
     securec.util.compile_and_flash("./sbox_simpleserial.c")
     scope.default_setup()
     securec.util.reset_target()
@@ -71,37 +72,51 @@ def main():
     records = {
         # fmt: off
 
-        # Plain with fixed input
-        "cw_plain_fixedinput": (10_000, lambda: fixeddata, None, lambda: 4 * [0]),
         # Plain with fixed key
-        "cw_plain_fixedkey": (10_000, None, lambda: fixeddata, lambda: 4 * [0]),
-
-        # Random loop order with 1 bit random, fixed input
-        "cw_loop1_fixedinput": (10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        f"cw{platform}_plain_fixedkey": (10_000, None, lambda: fixeddata, lambda: 4 * [0]),
         # Random loop order with 1 bit random, fixed key
-        "cw_loop1_fixedkey": (10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 1), 0]),
-
-        # Random loop order with 2 bit random, fixed input
-        "cw_loop2_fixedinput": (10_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        f"cw{platform}_loop1_fixedkey": (10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 1), 0]),
         # Random loop order with 2 bit random, fixed key
-        "cw_loop2_fixedkey": (10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
-
-        # Random loop order with 5 bit random, fixed input
-        "cw_loop5_fixedinput": (100_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
+        f"cw{platform}_loop2_fixedkey": (10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 3), 0]),
+        # Random loop order with 4 bit random, fixed key
+        f"cw{platform}_loop3_fixedkey": (10_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 7), 0]),
+        # Random loop order with 4 bit random, fixed key
+        f"cw{platform}_loop4_fixedkey": (20_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 15), 0]),
         # Random loop order with 5 bit random, fixed key
-        "cw_loop5_fixedkey": (200_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
+        f"cw{platform}_loop5_fixedkey": (20_000, None, lambda: fixeddata, lambda: [0, 0, random.randint(0, 31), 0]),
+
+        # Plain with random key and random input
+        f"cw{platform}_plain_randomkey_randominput": (20_000, None, None, lambda: 4 * [0]),
+        # Random loop order with 1 bit random, random key and random input
+        f"cw{platform}_loop1_randomkey_randominput": (20_000, None, None, lambda: [0, 0, random.randint(0, 1), 0]),
+        # Random loop order with 2 bit random, random key and random input
+        f"cw{platform}_loop2_randomkey_randominput": (20_000, None, None, lambda: [0, 0, random.randint(0, 3), 0]),
+        # Random loop order with 3 bit random, random key and random input
+        f"cw{platform}_loop3_randomkey_randominput": (20_000, None, None, lambda: [0, 0, random.randint(0, 7), 0]),
+        # Random loop order with 4 bit random, random key and random input
+        f"cw{platform}_loop4_randomkey_randominput": (20_000, None, None, lambda: [0, 0, random.randint(0, 15), 0]),
+        # Random loop order with 5 bit random, random key and random input
+        f"cw{platform}_loop5_randomkey_randominput": (20_000, None, None, lambda: [0, 0, random.randint(0, 31), 0]),
+
+        # Random loop order with 5 bit random, random key and random input
+        f"cw{platform}_loop5_fixedinput": (20_000, lambda: fixeddata, None, lambda: [0, 0, random.randint(0, 31), 0]),
 
         # Masked SBOX, fixed key
-        "cw_sbox_fixedkey": (100_000, None, lambda: fixeddata, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
+        f"cw{platform}_sbox_fixedkey": (100_000, None, lambda: fixeddata, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
         # Masked SBOX, fixed input
-        "cw_sbox_fixedinput": (10_000, lambda: fixeddata, None, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
+        f"cw{platform}_sbox_fixedinput": (10_000, lambda: fixeddata, None, lambda: [random.randint(0, 255), random.randint(0, 255), 0, 0]),
 
         # Maskex SBOX, fixed input, leaky lsb
-        "cw_sboxleaky_fixedinput": (10_000, lambda: fixeddata, None, lambda: [random.randint(0, 255) & 0xfe, random.randint(0, 255), 0, 0]),
+        f"cw{platform}_sboxleaky_fixedinput": (10_000, lambda: fixeddata, None, lambda: [random.randint(0, 255) & 0xfe, random.randint(0, 255), 0, 0]),
         # fmt: on
     }
 
-    record("cw_plain_fixedinput")
+    # record(f"cw{platform}_plain_randomkey_randominput")
+    # record(f"cw{platform}_loop1_randomkey_randominput")
+    # record(f"cw{platform}_loop2_randomkey_randominput")
+    # record(f"cw{platform}_loop3_randomkey_randominput")
+    # record(f"cw{platform}_loop4_randomkey_randominput")
+    record(f"cw{platform}_loop5_fixedinput")
 
 
 if __name__ == "__main__":

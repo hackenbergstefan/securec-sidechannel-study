@@ -44,19 +44,19 @@ For example for `i` in `range(num_traces)` we have:
 
 ## Sources for traces
 
-### ChipWhisperer Lite ARM
+### ChipWhisperer Lite
 
-Our first source for traces is a [ChipWhisperer Lite ARM](https://www.newae.com/products/NAE-CWLITE-ARM).
+Our first two sources for traces are [ChipWhisperer Lite ARM](https://www.newae.com/products/NAE-CWLITE-ARM) and [ChipWhisperer Lite XMEGA](https://www.newae.com/products/NAE-CWLITE-XMEGA).
 Traces are recorded using [ChipWhisperer python framework](https://github.com/newaetech/chipwhisperer).
 As this repository mainly uses Jupyter-Notebooks which are not very handy when using with "real" python code a small abstraction framework was created in context of lectures hold at [HSA](https://www.hs-augsburg.de/): https://github.com/hackenbergstefan/securec
 
 All necessary traces can be recorded by executing `./chipwhisperer/capture.py`.
 
-The traces are put under `../data` and all files are prefixed with `cw_` to make clear that their source is ChipWhisperer.
+The traces are put under `../data` and all files are prefixed with `cwarm_` or `cwxmega_` to make clear that their source is ChipWhisperer.
 
 ### ELMO side-channel simulator
 
 The second source for traces is [ELMO](https://github.com/sca-research/ELMO).
-This _Emulator for Cortex M0_ consists of two components: an emulator for the ARM M0 architecture and a set of leakage models.
+It consists of two components: an emulator for the ARM M0 architecture and a set of leakage models.
 
-The leakage model was investigated and extended in [Masterarbeit Giuliano](...).
+The traces are put under `../data` and all files are prefixed with `elmo_` or `elmohw_` to make clear that their source is ELMO power model or ELMO hamming weight model.

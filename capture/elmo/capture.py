@@ -58,8 +58,8 @@ fixeddata = [0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0
 
 
 def main():
-    for model in ("elmopower", "elmodiff", "elmohwpower", "elmohwdiff"):
-        capture(f"{model}_sboxleaky_fixedinput", inputfunc=lambda: fixeddata, trace_samples=546, trace_nums=10_000)
+    for model in ("elmo", "elmohw"):
+        capture(f"{model}_loop4_randomkey_randominput", trace_samples=514, trace_nums=20_000)
 
 
 if __name__ == "__main__":

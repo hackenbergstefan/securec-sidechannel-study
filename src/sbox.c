@@ -24,7 +24,7 @@ static const uint8_t sbox[] = {
     0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-uint16_t masked_sbox[256];
+uint8_t masked_sbox[256];
 uint8_t masked_key[16];
 uint8_t working_state[32];
 
@@ -32,7 +32,7 @@ void sbox_prepare(uint8_t key[16], sbox_random_t *rand)
 {
     for (uint_fast16_t i = 0; i < 256; i++)
     {
-        masked_sbox[i ^ rand->sbox_mask_in] = (rand->sbox_mask_out << 8) | (sbox[i] ^ rand->sbox_mask_out);
+        masked_sbox[i ^ rand->sbox_mask_in] = sbox[i] ^ rand->sbox_mask_out;
     }
     for (uint_fast8_t i = 0; i < 16; i++)
     {
@@ -58,7 +58,7 @@ void sbox_lookup(uint8_t input[16], sbox_random_t *rand)
         for (uint_fast8_t i = 0; i < 32; i++)
         {
             uint8_t lookup = masked_sbox[masked_key[i ^ random_loop_order] ^ extended_input[i ^ random_loop_order]];
-            working_state[i ^ random_loop_order] = lookup & 0xFF;
+            working_state[i ^ random_loop_order] = lookup;
         }
 
         _trigger_low();

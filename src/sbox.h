@@ -13,7 +13,7 @@ typedef struct
     uint8_t random_preload_2[32];
 } sbox_random_t;
 
-extern uint16_t masked_sbox[256];
+extern uint8_t masked_sbox[256];
 extern uint8_t masked_key[16];
 extern uint8_t working_state[32];
 

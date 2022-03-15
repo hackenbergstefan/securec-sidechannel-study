@@ -5,7 +5,7 @@
 #include "../../src/sbox.h"
 #include "elmoasmfunctionsdef.h"
 
-#define NUMBER_OF_TRACES 100000
+#define NUMBER_OF_TRACES 20000
 
 void read_input(uint8_t *buffer, size_t length)
 {
@@ -34,6 +34,9 @@ int main(void)
         read_input(plaintext, sizeof(key));
         memset(&rand, 0, sizeof(rand));
         read_random((uint8_t *)&rand, sizeof(rand));
+
+        randbyte(&rand.random_loop_order);
+        rand.random_loop_order &= 0x1F;
 
         rand.sbox_mask_in = 0;
         rand.sbox_mask_out = 0;

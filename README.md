@@ -46,7 +46,7 @@ The repository is structured into the following main folders:
   The C-code under investigation.
 - [./capture](./capture)
   Code and tools for capturing side-channel traces used in this study.
-- [./analyse](./analyse)
+- [./analyze](./analyze)
   Code and tools for analysis of captured side-channel traces.
 
   The methods for analysis are implemented and described in Jupyter notebooks.

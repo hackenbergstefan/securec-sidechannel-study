@@ -25,7 +25,7 @@ static const uint8_t sbox[] = {
 };
 
 uint8_t masked_sbox[256];
-uint8_t masked_key[16];
+uint8_t masked_key[32];
 uint8_t working_state[32];
 
 void sbox_prepare(uint8_t key[16], sbox_random_t *rand)
@@ -34,6 +34,7 @@ void sbox_prepare(uint8_t key[16], sbox_random_t *rand)
     {
         masked_sbox[i ^ rand->sbox_mask_in] = sbox[i] ^ rand->sbox_mask_out;
     }
+    memcpy(masked_key, rand->random_preload_1, sizeof(masked_key));
     for (uint_fast8_t i = 0; i < 16; i++)
     {
         masked_key[i] = key[i] ^ rand->sbox_mask_in;
@@ -46,8 +47,8 @@ void sbox_lookup(uint8_t input[16], sbox_random_t *rand)
     uint8_t extended_input[32];
     {
         memcpy(extended_input, input, 16);
-        memcpy(extended_input + 16, rand->random_preload_1, 16);
-        memcpy(working_state, rand->random_preload_2, 32);
+        memcpy(extended_input, rand->random_preload_2, 32);
+        memcpy(working_state, rand->random_preload_3, 32);
     }
 
     // Perform lookup

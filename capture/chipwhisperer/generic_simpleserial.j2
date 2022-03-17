@@ -1,0 +1,26 @@
+#include "hal.h"
+#include "simpleserial.h"
+
+uint8_t command(uint8_t cmd, uint8_t scmd, uint8_t len, uint8_t *input)
+{
+
+    trigger_high();
+
+    {{ code }}
+
+    trigger_low();
+
+    return 0;
+}
+
+int main(void)
+{
+    platform_init();
+    init_uart();
+    trigger_setup();
+
+    simpleserial_init();
+    simpleserial_addcmd(0x01, 0, command);
+    while (1)
+        simpleserial_get();
+}

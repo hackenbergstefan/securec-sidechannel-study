@@ -1,0 +1,40 @@
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+#define NUMBER_OF_TRACES {{ number_of_traces }}
+
+void read_input(uint8_t *buffer, size_t length)
+{
+    for (size_t i = 0; i < length; i++)
+    {
+        readbyte(&buffer[i]);
+    }
+}
+
+void read_random(uint8_t *buffer, size_t length)
+{
+    for (size_t i = 0; i < length; i++)
+    {
+        randbyte(&buffer[i]);
+    }
+}
+
+uint8_t input[{{ input_length }}];
+
+int main(void)
+{
+    for (uint_fast32_t i = 0; i < NUMBER_OF_TRACES; i++)
+    {
+        memset(input, 0, sizeof(input));
+        read_input(input, sizeof(input));
+        starttrigger();
+
+        {{ code }}
+
+        endtrigger();
+    }
+
+    endprogram();
+}
+

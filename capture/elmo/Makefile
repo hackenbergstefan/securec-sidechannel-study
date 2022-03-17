@@ -80,7 +80,7 @@ OBJDUMP		:= $(PREFIX)-objdump
 ###############################################################################
 # Source files
 
-LDSCRIPT	= $(BINARY).ld
+LDSCRIPT	= program.ld
 OBJS		+= $(BINARY).o
 ELMOASMFUNCTIONS = elmoasmfunctions.o
 

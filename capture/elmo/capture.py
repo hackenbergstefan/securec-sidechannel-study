@@ -37,7 +37,7 @@ def capture(
     subprocess.check_call(["make", "clean", "all"])
 
     subprocess.check_call(
-        [f"/home/stefan/elmo/{name.split('_')[0]}", "sbox_elmo.bin"],
+        [f"./{name.split('_')[0]}", "sbox_elmo.bin"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )

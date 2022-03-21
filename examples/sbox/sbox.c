@@ -24,44 +24,48 @@ static const uint8_t sbox[] = {
     0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-uint8_t masked_sbox[256];
 uint8_t masked_key[32];
+uint8_t extended_input[32];
+uint8_t masked_sbox[256];
 uint8_t working_state[32];
 
-void sbox_prepare(uint8_t key[16], sbox_random_t *rand)
+sbox_data_t sbox_data;
+
+void setup(uint8_t *input_data)
 {
-    for (uint_fast16_t i = 0; i < 256; i++)
+    memcpy(&sbox_data, input_data, sizeof(sbox_data));
+
+    // Prepare buffers
+    memcpy(masked_key, sbox_data.random_preload_1, 32);
+    memcpy(extended_input, sbox_data.random_preload_2, 32);
+    memcpy(working_state, sbox_data.random_preload_3, 32);
+
+    // Copy input
+    memcpy(extended_input, sbox_data.input, 16);
+
+    // Prepare masked key and sbox
+    for (size_t i = 0; i < 256; i++)
     {
-        masked_sbox[i ^ rand->sbox_mask_in] = sbox[i] ^ rand->sbox_mask_out;
+        masked_sbox[i ^ sbox_data.sbox_mask_in] = sbox[i] ^ sbox_data.sbox_mask_out;
     }
-    memcpy(masked_key, rand->random_preload_1, sizeof(masked_key));
-    for (uint_fast8_t i = 0; i < 16; i++)
+    memcpy(masked_key, sbox_data.random_preload_1, sizeof(masked_key));
+    for (size_t i = 0; i < 16; i++)
     {
-        masked_key[i] = key[i] ^ rand->sbox_mask_in;
+        masked_key[i] = sbox_data.key[i] ^ sbox_data.sbox_mask_in;
     }
 }
 
-void sbox_lookup(uint8_t input[16], sbox_random_t *rand)
+void run(void)
 {
-    // Prepare extended buffers
-    uint8_t extended_input[32];
+
+    size_t random_loop_order = sbox_data.random_loop_order & 0x1F;
+    for (size_t i = 0; i < 32; i++)
     {
-        memcpy(extended_input, input, 16);
-        memcpy(extended_input, rand->random_preload_2, 32);
-        memcpy(working_state, rand->random_preload_3, 32);
+        uint8_t lookup = masked_sbox[masked_key[i ^ random_loop_order] ^ extended_input[i ^ random_loop_order]];
+        working_state[i ^ random_loop_order] = lookup;
     }
+}
 
-    // Perform lookup
-    {
-        _trigger_high();
-
-        uint_fast8_t random_loop_order = rand->random_loop_order & 0x1F;
-        for (uint_fast8_t i = 0; i < 32; i++)
-        {
-            uint8_t lookup = masked_sbox[masked_key[i ^ random_loop_order] ^ extended_input[i ^ random_loop_order]];
-            working_state[i ^ random_loop_order] = lookup;
-        }
-
-        _trigger_low();
-    }
+void teardown(void)
+{
 }

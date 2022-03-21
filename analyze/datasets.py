@@ -1,7 +1,15 @@
 import os
+import sys
+
 import numpy as np
 
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(basedir)
+
+import capture
+from capture import capture_generic, randints
+
+capture.elmo_capture_generic.STDERR_TO_NULL = True
 
 _cache = {}
 

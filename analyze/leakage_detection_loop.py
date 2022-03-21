@@ -11,6 +11,43 @@ import datasets
 lascar.logger.setLevel(lascar.logging.CRITICAL)
 
 
+def cpa_multiple(dataset, selection_functions):
+    class CpaOutput(lascar.OutputMethod):
+        def __init__(self, *engines):
+            super().__init__(*engines)
+            self.result = []
+            self.name = engines[0].name
+
+        def _update(self, engine, results):
+            self.result = results[0]
+
+    trace = lascar.TraceBatchContainer(dataset["trace"], dataset)
+
+    selection_functions = {name: njit()(f) for name, f in selection_functions.items()}
+    engines = [
+        lascar.CpaEngine(
+            name=name,
+            selection_function=f,
+            guess_range=range(1),
+            jit=False,
+        )
+        for name, f in selection_functions.items()
+    ]
+    output_methods = [CpaOutput(engine) for engine in engines]
+    session = lascar.Session(
+        trace,
+        engines=engines,
+        output_method=output_methods,
+        progressbar=False,
+    )
+    session.run(batch_size=100_000)
+    # return np.asarray(
+    #     [(output_method.name, output_method.result) for output_method in output_methods],
+    #     dtype=[("name", "O", 1), ("cpa", "f8", len(output_methods[0].result))],
+    # )
+    return [(output_method.name, output_method.result) for output_method in output_methods]
+
+
 def cpa_full(dataset, selection_function, guess_range):
     class CpaOutput(lascar.OutputMethod):
         def _update(self, engine, results):

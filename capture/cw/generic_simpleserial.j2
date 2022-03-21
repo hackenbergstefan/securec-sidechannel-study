@@ -4,11 +4,23 @@
 uint8_t command(uint8_t cmd, uint8_t scmd, uint8_t len, uint8_t *input)
 {
 
+{% if fromfile %}
+    setup(input);
+{% endif %}
+
     trigger_high();
 
+{% if fromfile %}
+    run();
+{% else %}
     {{ code }}
+{% endif %}
 
     trigger_low();
+
+{% if fromfile %}
+    teardown();
+{% endif %}
 
     return 0;
 }
@@ -24,3 +36,7 @@ int main(void)
     while (1)
         simpleserial_get();
 }
+
+{% if fromfile %}
+#include "{{ fromfile }}"
+{% endif %}

@@ -78,6 +78,7 @@ def capture(
     save=False,
     checkoutput=None,
     tmpdir=True,
+    **kwargs,
 ):
     """Capture traces with elmo."""
     try:

@@ -1,5 +1,14 @@
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
 #include "hal.h"
 #include "simpleserial.h"
+
+void print_buffer(uint8_t *buffer, size_t length)
+{
+    simpleserial_put(0x01, length, buffer);
+}
 
 uint8_t command(uint8_t cmd, uint8_t scmd, uint8_t len, uint8_t *input)
 {

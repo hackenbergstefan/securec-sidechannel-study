@@ -108,3 +108,64 @@ def cpa_leakage_rate(dataset, selection_function, randoms=16):
     )
     session.run(batch_size=100_000)
     return output_method.result
+
+
+def ttest(dataset, selection_function, correct_key):
+    class TtestOutput(lascar.OutputMethod):
+        def __init__(self, *engines):
+            super().__init__(*engines)
+            self.result = []
+
+        def _update(self, engine, results):
+            guess = int(engine.name.split(" ")[-1])
+            self.result.append((guess, results))
+
+    trace = lascar.TraceBatchContainer(dataset["trace"], dataset["input"])
+
+    engines = [
+        lascar.TTestEngine(
+            name=f"ttest {guess}",
+            partition_function=selection_function(guess),
+        )
+        for guess in set([random.randint(0, 255) for _ in range(20)] + [correct_key])
+    ]
+    output_method = TtestOutput(*engines)
+    session = lascar.Session(
+        trace,
+        engines=engines,
+        output_method=output_method,
+        progressbar=False,
+    )
+    session.run(batch_size=100_000)
+    return output_method.result
+
+
+def snr(dataset, selection_function, selection_range, correct_key):
+    class SnrOutput(lascar.OutputMethod):
+        def __init__(self, *engines):
+            super().__init__(*engines)
+            self.result = []
+
+        def _update(self, engine, results):
+            guess = int(engine.name.split(" ")[-1])
+            self.result.append((guess, results))
+
+    trace = lascar.TraceBatchContainer(dataset["trace"], dataset["input"])
+
+    engines = [
+        lascar.SnrEngine(
+            name=f"ttest {guess}",
+            partition_function=selection_function(guess),
+            partition_range=selection_range,
+        )
+        for guess in set([random.randint(0, 255) for _ in range(20)] + [correct_key])
+    ]
+    output_method = SnrOutput(*engines)
+    session = lascar.Session(
+        trace,
+        engines=engines,
+        output_method=output_method,
+        progressbar=False,
+    )
+    session.run(batch_size=100_000)
+    return output_method.result

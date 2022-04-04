@@ -1,6 +1,10 @@
 import random
 
-from .cw import cw_capture_generic
+try:
+    from .cw import cw_capture_generic
+except:
+    # If CW is not available continue anyway
+    pass
 from .elmo import elmo_capture_generic
 
 

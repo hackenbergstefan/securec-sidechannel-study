@@ -123,6 +123,8 @@ def capture(
             if list(output_last) != prints[-len(output_last) :]:
                 raise Exception(f"{output_last} != {prints[-len(output_last):]}")
 
+        shutil.copy(os.path.join(cwd, "output/asmoutput/asmtrace00001.txt"), filedir)
+
         if cleanup:
             subprocess.check_call(
                 ["rm", "-rf", "output"],
@@ -130,7 +132,6 @@ def capture(
                 stderr=subprocess.DEVNULL,
                 cwd=cwd,
             )
-
         if save:
             np.save(os.path.join(filedir, f"../../data/{name}.npy"), data)
     finally:

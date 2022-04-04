@@ -56,3 +56,35 @@ As this repository mainly uses Jupyter-Notebooks which are not very handy when u
 
 The second source for traces is [ELMO](https://github.com/sca-research/ELMO).
 It consists of two components: an emulator for the ARM M0 architecture and a set of leakage models.
+
+#### How to build ELMO
+
+The binaries [elmo](./elmo/elmo) and [elmohw](./elmo/elmohw) are built for Linux x86_64.
+On a different platform use the following instructions to built you own version of Elmo:
+
+1. Clone [ELMO](https://github.com/sca-research/ELMO).
+2. Copy [./elmo/elmodefines.h](./elmo/elmodefines.h) to cloned ELMO folder.
+3. Build ELMO `make clean elmo`.
+4. Copy the generated executable `elmo` to the folder [./elmo](./elmo).
+5. Edit the copy of `elmodefines.h` and change the power model to hamming weight model:
+
+   ```diff
+   --- a/elmodefines.h
+   +++ b/elmodefines.h
+   @@ -111,13 +111,13 @@ unsigned long systick_ints;
+                           // bus
+   //#define FIXEDVSRANDOM
+   //#define MASKFLOW
+   -#define ENERGYMODEL
+   +//#define ENERGYMODEL
+
+   //#define DIFFTRACELENGTH
+   #define BINARYTRACES
+   //#define MEANCENTRE
+   #define POWERTRACES
+   -//#define POWERMODEL_HW
+   +#define POWERMODEL_HW
+   ```
+
+6. Call again `make clean elmo`.
+7. Rename the generated executable `elmo` to `elmohw` and copy to folder [./elmo](./elmo).

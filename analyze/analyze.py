@@ -169,3 +169,33 @@ def snr(dataset, selection_function, selection_range, correct_key):
     )
     session.run(batch_size=100_000)
     return output_method.result
+
+
+def cpa_evolution(dataset, selection_function, guess_range=range(256)):
+    class CpaOutput(lascar.OutputMethod):
+        def __init__(self, *engines):
+            super().__init__(*engines)
+            self.result = {guess: [] for guess in guess_range}
+
+        def _update(self, engine, results):
+            maxs = np.max(np.abs(results), axis=1)
+            for guess, result in zip(guess_range, maxs):
+                self.result[guess].append((engine.finalize_step[-1], result))
+
+    trace = lascar.TraceBatchContainer(dataset["trace"], dataset)
+
+    engine = lascar.CpaEngine(
+        name="cpa",
+        selection_function=selection_function,
+        guess_range=guess_range,
+    )
+    output_method = CpaOutput(engine)
+    session = lascar.Session(
+        trace,
+        engine=engine,
+        output_method=output_method,
+        output_steps=range(0, len(dataset), 100),
+        progressbar=False,
+    )
+    session.run(batch_size=100_000)
+    return list(output_method.result.items())

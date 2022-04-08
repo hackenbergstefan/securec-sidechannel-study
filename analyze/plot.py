@@ -29,6 +29,30 @@ class Plot:
         elif OUTPUT_MODE == "plotly":
             self.fig.update_layout(title=title)
 
+    def xrange(self, left, right):
+        if OUTPUT_MODE == "matplotlib":
+            plt.xlim(left, right)
+        elif OUTPUT_MODE == "plotly":
+            self.fig.update_layout(xaxis_range=(left, right))
+
+    def yrange(self, left, right):
+        if OUTPUT_MODE == "matplotlib":
+            plt.ylim(left, right)
+        elif OUTPUT_MODE == "plotly":
+            self.fig.update_layout(yaxis_range=(left, right))
+
+    def xlabel(self, label):
+        if OUTPUT_MODE == "matplotlib":
+            plt.xlabel(label)
+        elif OUTPUT_MODE == "plotly":
+            self.fig.update_layout(xaxis_title=label)
+
+    def ylabel(self, label):
+        if OUTPUT_MODE == "matplotlib":
+            plt.ylabel(label)
+        elif OUTPUT_MODE == "plotly":
+            self.fig.update_layout(yaxis_title=label)
+
 
 def plot_lines(datas):
     """Plot lines.
@@ -48,7 +72,8 @@ def plot_lines(datas):
                 plt.plot(xs, ys, label=name)
             else:
                 plt.plot(data, label=name)
-        plt.legend()
+        # NOTE: Number of entries in legend is limited to avoid too big plots
+        plt.legend([name for name, _ in datas][:16])
     else:
         fig = pgo.Figure()
         for name, data in datas:

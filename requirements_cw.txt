@@ -1,3 +1,2 @@
 -r requirements.txt
--e git+https://github.com/hackenbergstefan/securec#egg=securec
 git+https://github.com/newaetech/chipwhisperer#egg=chipwhisperer

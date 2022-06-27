@@ -3,9 +3,9 @@ import os
 import numpy as np
 import tqdm
 
-import securec
-import securec.util
 import jinja2
+
+from . import cw_helper
 
 filedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,11 +13,11 @@ TEMPLATE = open(os.path.join(filedir, "generic_simpleserial.j2")).read()
 
 
 def _capture_single(data, cmd=0x01, samples=500):
-    securec.config.scope.adc.samples = samples
-    securec.config.scope.arm()
-    securec.config.target.flush()
-    securec.config.target.simpleserial_write(cmd, data)
-    return securec.util.capture()
+    cw_helper.scope.adc.samples = samples
+    cw_helper.scope.arm()
+    cw_helper.target.flush()
+    cw_helper.target.simpleserial_write(cmd, data)
+    return cw_helper.capture()
 
 
 def _capture(
@@ -38,7 +38,7 @@ def _capture(
         data["trace"][i, :] = _capture_single(bytes(data["input"][i, :]), samples=number_of_samples)
 
         if checkoutput and i in (0, number_of_traces - 1):
-            actual_output = securec.config.target.simpleserial_read(0x01)
+            actual_output = cw_helper.target.simpleserial_read(0x01)
             expected_output = checkoutput(data["input"][i])
             if list(actual_output) != list(expected_output):
                 raise Exception(f"{actual_output} != {expected_output}")
@@ -62,10 +62,10 @@ def capture(
         fp.write(rendered)
 
     # Setup, compile and flash
-    scope, target = securec.util.init(platform="CWLITE" + platform.upper())
-    securec.util.compile_and_flash(os.path.join(filedir, "_generic_simpleserial.c"))
+    scope, target = cw_helper.init_scope_and_target(platform_="CWLITE" + platform.upper())
+    cw_helper.compile_and_flash(os.path.join(filedir, "_generic_simpleserial.c"))
     scope.default_setup()
-    securec.util.reset_target()
+    cw_helper.reset_target()
 
     data = _capture(
         number_of_traces=number_of_traces,
@@ -73,5 +73,5 @@ def capture(
         number_of_samples=number_of_samples,
         checkoutput=checkoutput,
     )
-    securec.util.exit()
+    cw_helper.exit_scope_and_target()
     return data

@@ -3,9 +3,6 @@ import random
 import numpy as np
 import tqdm
 
-import securec
-import securec.util
-
 
 def _capture(data, cmd=0x01, samples=500):
     securec.config.scope.adc.samples = samples
